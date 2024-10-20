@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import NavBar from "../app/NavBar/NavBar";
 
 export const metadata: Metadata = {
   title: "Converter",
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+      <NavBar />
         <div>
           {children}
         </div>
