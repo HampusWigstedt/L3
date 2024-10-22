@@ -3,27 +3,28 @@ import React, { useState } from 'react';
 import GetMetadataController from '../../Controller/GetMetadataController';
 
 const Metadata = () => {
-    const [filePath, setFilePath] = useState('');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [metadata, setMetadata] = useState<any>(null);
     const getMetadataController = new GetMetadataController();
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            setFilePath(file.path);
+            setSelectedFile(file);
         }
     }
 
     const handleGetMetadata = async () => {
-        if (filePath) {
+        if (selectedFile) {
             try {
-                const metadata = await getMetadataController.getMetadata(filePath);
+                const metadata = await getMetadataController.getMetadata(selectedFile);
+                console.log('Metadata:', metadata); // Log the metadata to the console
                 setMetadata(metadata);
             } catch (error) {
                 console.error('Error fetching metadata:', error);
             }
         } else {
-            console.error('File path must be provided');
+            console.error('Please select a file to get metadata');
         }
     }
 

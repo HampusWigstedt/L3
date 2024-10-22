@@ -1,7 +1,5 @@
 import axios from 'axios';
 import FormData from 'form-data';
-import fs from 'fs';
-import { WriteStream } from 'fs';
 
 class Client {
     private serverHost: string;
@@ -12,31 +10,38 @@ class Client {
         this.serverPort = serverPort;
     }
 
-    private createFormData(filePath: string): FormData {
+    private async createFormData(file: File): Promise<FormData> {
         const form = new FormData();
-        form.append('file', fs.createReadStream(filePath));
+        form.append('file', file);
         return form;
     }
 
     private async saveStreamToFile(dataStream: NodeJS.ReadableStream, outputFilePath: string): Promise<void> {
-        const writer: WriteStream = fs.createWriteStream(outputFilePath);
-        dataStream.pipe(writer);
+        if (typeof window === 'undefined') {
+            const fs = await import('fs');
+            const writer = fs.createWriteStream(outputFilePath);
 
-        return new Promise((resolve, reject) => {
-            writer.on('finish', () => {
-                console.log(`File successfully downloaded and saved as ${outputFilePath}`);
-                resolve();
-            });
+            dataStream.pipe(writer);
 
-            writer.on('error', (err: Error) => {
-                console.error('Error writing file:', err);
-                reject(err);
+            return new Promise((resolve, reject) => {
+                writer.on('finish', () => {
+                    console.log(`File successfully downloaded and saved as ${outputFilePath}`);
+                    resolve();
+                });
+
+                writer.on('error', (err: Error) => {
+                    console.error('Error writing file:', err);
+                    reject(err);
+                });
             });
-        });
+        } else {
+            console.error("File operations can only be run on the server.");
+            return Promise.reject(new Error("File operations can only be run on the server."));
+        }
     }
 
     public async convertFile(filePath: string): Promise<void> {
-        const form = this.createFormData(filePath);
+        const form = await this.createFormData(filePath);
 
         try {
             const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/convert`, form, {
@@ -50,22 +55,21 @@ class Client {
         }
     }
 
-    public async getMetadata(filePath: string): Promise<void> {
-        const form = this.createFormData(filePath);
+    public async getMetadata(file: File): Promise<any> {
+        const form = await this.createFormData(file);
 
         try {
-            const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/metadata`, form, {
-                headers: form.getHeaders()
-            });
-
+            const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/metadata`, form);
             console.log('Metadata:', response.data);
+            return response.data; // Return metadata for further processing
         } catch (err) {
             console.error('Error retrieving metadata:', err);
+            throw err; // Re-throw error for handling in the UI
         }
     }
 
     public async stereoToSurround(filePath: string): Promise<void> {
-        const form = this.createFormData(filePath);
+        const form = await this.createFormData(filePath);
 
         try {
             const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/StereoToSurround`, form, {
@@ -80,7 +84,7 @@ class Client {
     }
 
     public async resizeVideo(filePath: string, width: number, height: number): Promise<void> {
-        const form = this.createFormData(filePath);
+        const form = await this.createFormData(filePath);
         form.append('width', width.toString());
         form.append('height', height.toString());
 
@@ -97,7 +101,7 @@ class Client {
     }
 
     public async removeAudio(filePath: string): Promise<void> {
-        const form = this.createFormData(filePath);
+        const form = await this.createFormData(filePath);
 
         try {
             const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/removeaudio`, form, {
