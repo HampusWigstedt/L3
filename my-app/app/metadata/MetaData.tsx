@@ -61,7 +61,7 @@ const Metadata = () => {
         <div className="p-4">
             <h1 className="text-center text-4xl font-bold underline">Read Metadata</h1>
             <div className="flex justify-center items-center pt-4">
-                <input type="file" onChange={handleFileChange} />
+                <input type="file" className="file-input file-input-bordered w-full max-w-xs m-2" onChange={handleFileChange} />
                 <button className="btn btn-primary" onClick={handleGetMetadata}>Get Metadata</button>
             </div>
             {metadata && (
