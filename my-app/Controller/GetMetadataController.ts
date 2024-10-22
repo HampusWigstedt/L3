@@ -8,6 +8,7 @@ class GetMetadataController {
     }
 
     public async getMetadata(file: File): Promise<any> {
+        console.log('GetMetadataController: Calling client.getMetadata');
         return await this.client.getMetadata(file);
     }
 }

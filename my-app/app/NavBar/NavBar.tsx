@@ -11,7 +11,7 @@ const NavBar = () => {
     };
 
     return (
-        <nav className="bg-base-300 shadow-lg p-6 my-2 rounded-full relative z-20 max-w-8xl mt-4 mx-auto">
+        <nav className="bg-base-300 shadow-lg p-6 my-2 rounded-full relative z-20 max-w-8xl mt-4 mx-auto w-2/3">
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     <Link href="/">
@@ -30,7 +30,7 @@ const NavBar = () => {
                             <ul className="menu dropdown-content z-[1] p-2 shadow bg-primary rounded-box w-52 mt-4 absolute">
                                 <li>
                                     <Link href="/Metadata">
-                                        <span>See Metadata</span>
+                                        <span>Read Metadata</span>
                                     </Link>
                                 </li>
                             </ul>
