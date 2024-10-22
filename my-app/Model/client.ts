@@ -42,8 +42,8 @@ class Client {
     }
 
     public async convertFile(file: File): Promise<void> {
-        if (file.type !== 'video/mp4') {
-            throw new Error('Only MP4 files are allowed.');
+        if (file.type !== 'video/mp4' && file.type !== 'audio/wav') {
+            throw new Error('Only MP4 and WAV files are allowed.');
         }
 
         const form = await this.createFormData(file);
@@ -80,50 +80,83 @@ class Client {
         }
     }
 
-    public async stereoToSurround(filePath: string): Promise<void> {
-        const form = await this.createFormData(filePath);
+    public async stereoToSurround(file: File): Promise<void> {
+        if (file.type !== 'audio/mpeg' && file.type !== 'audio/wav') {
+            throw new Error('Only MP3 or WAV files are allowed.');
+        }
+
+        const form = await this.createFormData(file);
 
         try {
             const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/StereoToSurround`, form, {
-                headers: form.getHeaders(),
-                responseType: 'stream'
+                responseType: 'blob'
             });
 
-            await this.saveStreamToFile(response.data as NodeJS.ReadableStream, 'output_surround.mp3');
+            if (!response.data) {
+                throw new Error('No data received from the server.');
+            }
+
+            const blob = new Blob([response.data], { type: 'audio/mpeg' });
+            const fileName = 'output_surround.mp3';
+            const fileDownloader = new FileDownloader(fileName, blob);
+            fileDownloader.download();
         } catch (err) {
             console.error('Error making API request:', err);
+            throw err;
         }
     }
 
-    public async resizeVideo(filePath: string, width: number, height: number): Promise<void> {
-        const form = await this.createFormData(filePath);
+    public async resizeVideo(file: File, width: number, height: number): Promise<void> {
+        if (file.type !== 'video/mp4') {
+            throw new Error('Only MP4 files are allowed.');
+        }
+
+        const form = await this.createFormData(file);
         form.append('width', width.toString());
         form.append('height', height.toString());
 
         try {
             const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/resize`, form, {
-                headers: form.getHeaders(),
-                responseType: 'stream'
+                responseType: 'blob'
             });
 
-            await this.saveStreamToFile(response.data as NodeJS.ReadableStream, `resized_${filePath}`);
+            if (!response.data) {
+                throw new Error('No data received from the server.');
+            }
+
+            const blob = new Blob([response.data], { type: 'video/mp4' });
+            const fileName = `resized_${file.name}`;
+            const fileDownloader = new FileDownloader(fileName, blob);
+            fileDownloader.download();
         } catch (err) {
             console.error('Error making API request:', err);
+            throw err;
         }
     }
 
-    public async removeAudio(filePath: string): Promise<void> {
-        const form = await this.createFormData(filePath);
+    public async removeAudio(file: File): Promise<void> {
+        if (file.type !== 'video/mp4') {
+            throw new Error('Only MP4 files are allowed.');
+        }
+
+        const form = await this.createFormData(file);
 
         try {
             const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/removeaudio`, form, {
-                headers: form.getHeaders(),
-                responseType: 'stream'
+                responseType: 'blob'
             });
 
-            await this.saveStreamToFile(response.data as NodeJS.ReadableStream, `no_audio_${filePath}`);
+            if (!response.data) {
+                throw new Error('No data received from the server.');
+            }
+
+            const blob = new Blob([response.data], { type: 'video/mp4' });
+            const fileName = `no_audio_${file.name}`;
+            const fileDownloader = new FileDownloader(fileName, blob);
+            fileDownloader.download();
         } catch (err) {
             console.error('Error making API request:', err);
+            throw err;
         }
     }
 }

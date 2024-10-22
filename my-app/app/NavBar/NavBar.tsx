@@ -5,7 +5,7 @@ import Link from 'next/link'
 const NavBar = () => {
 
     return (
-        <nav className="bg-base-300 shadow-lg p-6 my-2 rounded-full relative z-20 max-w-8xl mx-auto w-2/3">
+        <nav className="bg-base-300 shadow-lg p-6 my-2 rounded-full relative z-20 max-w-8xl mx-auto w-fit">
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     <Link href="/">
@@ -19,6 +19,15 @@ const NavBar = () => {
                         </Link>
                         <Link href="/convert">
                             <span className="btn bg-black text-lg md:text-xl hover:btn-neutral">Convert to mp3</span>
+                        </Link>
+                        <Link href="/stereoToSurround">
+                            <span className="btn bg-black text-lg md:text-xl hover:btn-neutral">Stereo To Surround</span>
+                        </Link>
+                        <Link href="/resizeVideo">
+                            <span className="btn bg-black text-lg md:text-xl hover:btn-neutral">Resize Video</span>
+                        </Link>
+                        <Link href="/removeAudio">
+                            <span className="btn bg-black text-lg md:text-xl hover:btn-neutral">Remove Audio</span>
                         </Link>
                     </div>
                 </div>

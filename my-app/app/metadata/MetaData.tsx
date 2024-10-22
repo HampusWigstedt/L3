@@ -58,7 +58,7 @@ const Metadata = () => {
     }
 
     return (
-        <div className="p-4">
+        <div className="p-4 w-screen h-screen">
             <h1 className="text-center text-4xl font-bold underline">Read Metadata</h1>
             <div className="flex justify-center items-center pt-4">
                 <input type="file" className="file-input file-input-bordered w-full max-w-xs m-2" onChange={handleFileChange} />
