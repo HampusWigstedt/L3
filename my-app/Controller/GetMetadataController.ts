@@ -7,8 +7,9 @@ class GetMetadataController {
         this.client = new Client();
     }
 
-    public async getMetadata(file: File): Promise<any> {
-        return await this.client.getMetadata(file);
+    // Retrieves metadata for the provided file
+    public async getMetadata(file: File) {
+        return this.client.getMetadata(file);
     }
 }
 

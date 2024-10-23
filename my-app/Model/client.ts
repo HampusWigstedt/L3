@@ -3,14 +3,14 @@ import FormData from 'form-data';
 import FileDownloader from '../Model/FileDownloader';
 
 class Client {
-    private static readonly DEFAULT_SERVER_HOST = 'localhost';
-    private static readonly DEFAULT_SERVER_PORT = 3000;
-    private static readonly ApiBaseUrl = 'https://cscloud6-195.lnu.se/hmus';
+    private static readonly defaultServerHost = 'localhost';
+    private static readonly defaultServerPort = 3000;
+    private static readonly apiBaseUrl = 'https://cscloud6-195.lnu.se/hmus';
 
     private serverHost: string;
     private serverPort: number;
 
-    constructor(serverHost: string = Client.DEFAULT_SERVER_HOST, serverPort: number = Client.DEFAULT_SERVER_PORT) {
+    constructor(serverHost: string = Client.defaultServerHost, serverPort: number = Client.defaultServerPort) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
     }
@@ -25,84 +25,37 @@ class Client {
     // Converts a file to MP3 format
     public async convertFile(file: File): Promise<void> {
         this.validateFileType(file, ['video/mp4', 'audio/wav'], 'Only MP4 and WAV files are allowed.');
-
         const form = await this.createFormData(file);
-
-        try {
-            const response = await axios.post<Blob>(`${Client.ApiBaseUrl}/convert`, form, {
-                responseType: 'blob'
-            });
-
-            this.handleResponse(response, 'audio/mpeg', 'output.mp3');
-        } catch (err) {
-            this.handleError('Error making API request:', err);
-        }
+        await this.postFile(form, 'convert', 'audio/mpeg', 'output.mp3');
     }
 
     // Retrieves metadata of a file
     public async getMetadata(file: File) {
         const form = await this.createFormData(file);
-
-        try {
-            const response = await axios.post(`${Client.ApiBaseUrl}/metadata`, form);
-            console.log('Metadata:', response.data);
-            return response.data;
-        } catch (err) {
-            this.handleError('Error retrieving metadata:', err);
-        }
+        return await this.postMetadata(form);
     }
 
     // Converts stereo audio to surround sound
     public async stereoToSurround(file: File): Promise<void> {
         this.validateFileType(file, ['audio/mpeg', 'audio/wav'], 'Only MP3 or WAV files are allowed.');
-
         const form = await this.createFormData(file);
-
-        try {
-            const response = await axios.post<Blob>(`${Client.ApiBaseUrl}/StereoToSurround`, form, {
-                responseType: 'blob'
-            });
-
-            this.handleResponse(response, 'audio/mpeg', 'output_surround.mp3');
-        } catch (err) {
-            this.handleError('Error making API request:', err);
-        }
+        await this.postFile(form, 'StereoToSurround', 'audio/mpeg', 'output_surround.mp3');
     }
 
     // Resizes a video file
     public async resizeVideo(file: File, width: number, height: number): Promise<void> {
         this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
-
         const form = await this.createFormData(file);
         form.append('width', width.toString());
         form.append('height', height.toString());
-
-        try {
-            const response = await axios.post<Blob>(`${Client.ApiBaseUrl}/resize`, form, {
-                responseType: 'blob'
-            });
-
-            this.handleResponse(response, 'video/mp4', `resized_${file.name}`);
-        } catch (err) {
-            this.handleError('Error making API request:', err);
-        }
+        await this.postFile(form, 'resize', 'video/mp4', `resized_${file.name}`);
     }
 
     // Removes audio from a video file
     public async removeAudio(file: File): Promise<void> {
         this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
-
         const form = await this.createFormData(file);
-
-        try {
-            const response = await axios.post<Blob>(`${Client.ApiBaseUrl}/removeaudio`, form, {
-                responseType: 'blob'
-            });
-
-            this.handleResponse(response, 'video/mp4', `no_audio_${file.name}`);
-        } catch (err) {
-            this.handleError('Error making API request:', err);
-        }
+        await this.postFile(form, 'removeaudio', 'video/mp4', `no_audio_${file.name}`);
     }
 
     // Validates the file type
@@ -127,6 +80,29 @@ class Client {
     private handleError(message: string, err: Error | string | unknown): void {
         console.error(message, err);
         throw err;
+    }
+
+    // Posts file to the specified endpoint and handles the response
+    private async postFile(form: FormData, endpoint: string, mimeType: string, fileName: string): Promise<void> {
+        try {
+            const response = await axios.post<Blob>(`${Client.apiBaseUrl}/${endpoint}`, form, {
+                responseType: 'blob'
+            });
+            this.handleResponse(response, mimeType, fileName);
+        } catch (err) {
+            this.handleError(`Error making API request to ${endpoint}:`, err);
+        }
+    }
+
+    // Posts form data to the metadata endpoint and returns the response data
+    private async postMetadata(form: FormData) {
+        try {
+            const response = await axios.post(`${Client.apiBaseUrl}/metadata`, form);
+            console.log('Metadata:', response.data);
+            return response.data;
+        } catch (err) {
+            this.handleError('Error retrieving metadata:', err);
+        }
     }
 }
 

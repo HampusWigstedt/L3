@@ -7,6 +7,7 @@ class RemoveAudioController {
         this.client = new Client();
     }
 
+    // Removes audio from the provided video file
     public async removeAudio(file: File): Promise<void> {
         console.log('RemoveAudioController: Calling client.removeAudio');
         return this.client.removeAudio(file);

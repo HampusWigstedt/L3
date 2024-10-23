@@ -12,6 +12,11 @@ export class FileDownloader {
 
   // Initiates the download of the file
   public download(): void {
+    this.triggerFileDownload();
+  }
+
+  // Triggers the file download using the file-saver library
+  private triggerFileDownload(): void {
     saveAs(this.fileContent, this.fileName);
   }
 }
