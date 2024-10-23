@@ -10,13 +10,16 @@ class Client {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
     }
+    
 
+    // Creates FormData object from a file
     private async createFormData(file: File): Promise<FormData> {
         const form = new FormData();
         form.append('file', file);
         return form;
     }
 
+    // Saves a data stream to a file (server-side only)
     private async saveStreamToFile(dataStream: NodeJS.ReadableStream, outputFilePath: string): Promise<void> {
         if (typeof window === 'undefined') {
             const fs = await import('fs');
@@ -36,15 +39,15 @@ class Client {
                 });
             });
         } else {
-            console.error("File operations can only be run on the server.");
-            return Promise.reject(new Error("File operations can only be run on the server."));
+            const errorMessage = "File operations can only be run on the server.";
+            console.error(errorMessage);
+            return Promise.reject(new Error(errorMessage));
         }
     }
 
+    // Converts a file to MP3 format
     public async convertFile(file: File): Promise<void> {
-        if (file.type !== 'video/mp4' && file.type !== 'audio/wav') {
-            throw new Error('Only MP4 and WAV files are allowed.');
-        }
+        this.validateFileType(file, ['video/mp4', 'audio/wav'], 'Only MP4 and WAV files are allowed.');
 
         const form = await this.createFormData(file);
 
@@ -53,37 +56,28 @@ class Client {
                 responseType: 'blob'
             });
 
-            if (!response.data) {
-                throw new Error('No data received from the server.');
-            }
-
-            const blob = new Blob([response.data], { type: 'audio/mpeg' });
-            const fileName = 'output.mp3';
-            const fileDownloader = new FileDownloader(fileName, blob);
-            fileDownloader.download();
+            this.handleResponse(response, 'audio/mpeg', 'output.mp3');
         } catch (err) {
-            console.error('Error making API request:', err);
-            throw err;
+            this.handleError('Error making API request:', err);
         }
     }
 
-    public async getMetadata(file: File): Promise<any> {
+    // Retrieves metadata of a file
+    public async getMetadata(file: File): Promise<Array> {
         const form = await this.createFormData(file);
 
         try {
             const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/metadata`, form);
             console.log('Metadata:', response.data);
-            return response.data; // Return metadata for further processing
+            return response.data;
         } catch (err) {
-            console.error('Error retrieving metadata:', err);
-            throw err; // Re-throw error for handling in the UI
+            this.handleError('Error retrieving metadata:', err);
         }
     }
 
+    // Converts stereo audio to surround sound
     public async stereoToSurround(file: File): Promise<void> {
-        if (file.type !== 'audio/mpeg' && file.type !== 'audio/wav') {
-            throw new Error('Only MP3 or WAV files are allowed.');
-        }
+        this.validateFileType(file, ['audio/mpeg', 'audio/wav'], 'Only MP3 or WAV files are allowed.');
 
         const form = await this.createFormData(file);
 
@@ -92,24 +86,15 @@ class Client {
                 responseType: 'blob'
             });
 
-            if (!response.data) {
-                throw new Error('No data received from the server.');
-            }
-
-            const blob = new Blob([response.data], { type: 'audio/mpeg' });
-            const fileName = 'output_surround.mp3';
-            const fileDownloader = new FileDownloader(fileName, blob);
-            fileDownloader.download();
+            this.handleResponse(response, 'audio/mpeg', 'output_surround.mp3');
         } catch (err) {
-            console.error('Error making API request:', err);
-            throw err;
+            this.handleError('Error making API request:', err);
         }
     }
 
+    // Resizes a video file
     public async resizeVideo(file: File, width: number, height: number): Promise<void> {
-        if (file.type !== 'video/mp4') {
-            throw new Error('Only MP4 files are allowed.');
-        }
+        this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
 
         const form = await this.createFormData(file);
         form.append('width', width.toString());
@@ -120,24 +105,15 @@ class Client {
                 responseType: 'blob'
             });
 
-            if (!response.data) {
-                throw new Error('No data received from the server.');
-            }
-
-            const blob = new Blob([response.data], { type: 'video/mp4' });
-            const fileName = `resized_${file.name}`;
-            const fileDownloader = new FileDownloader(fileName, blob);
-            fileDownloader.download();
+            this.handleResponse(response, 'video/mp4', `resized_${file.name}`);
         } catch (err) {
-            console.error('Error making API request:', err);
-            throw err;
+            this.handleError('Error making API request:', err);
         }
     }
 
+    // Removes audio from a video file
     public async removeAudio(file: File): Promise<void> {
-        if (file.type !== 'video/mp4') {
-            throw new Error('Only MP4 files are allowed.');
-        }
+        this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
 
         const form = await this.createFormData(file);
 
@@ -146,18 +122,34 @@ class Client {
                 responseType: 'blob'
             });
 
-            if (!response.data) {
-                throw new Error('No data received from the server.');
-            }
-
-            const blob = new Blob([response.data], { type: 'video/mp4' });
-            const fileName = `no_audio_${file.name}`;
-            const fileDownloader = new FileDownloader(fileName, blob);
-            fileDownloader.download();
+            this.handleResponse(response, 'video/mp4', `no_audio_${file.name}`);
         } catch (err) {
-            console.error('Error making API request:', err);
-            throw err;
+            this.handleError('Error making API request:', err);
         }
+    }
+
+    // Validates the file type
+    private validateFileType(file: File, allowedTypes: string[], errorMessage: string): void {
+        if (!allowedTypes.includes(file.type)) {
+            throw new Error(errorMessage);
+        }
+    }
+
+    // Handles the API response and initiates file download
+    private handleResponse(response: any, mimeType: string, fileName: string): void {
+        if (!response.data) {
+            throw new Error('No data received from the server.');
+        }
+
+        const blob = new Blob([response.data], { type: mimeType });
+        const fileDownloader = new FileDownloader(fileName, blob);
+        fileDownloader.download();
+    }
+
+    // Handles errors consistently
+    private handleError(message: string, err: Error | string | unknown): void {
+        console.error(message, err);
+        throw err;
     }
 }
 

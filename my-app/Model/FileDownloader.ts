@@ -1,6 +1,6 @@
 import { saveAs } from 'file-saver';
 
-// FileDownloader class responsible for handling file downloads
+// Class responsible for handling file downloads
 export class FileDownloader {
   private fileName: string;
   private fileContent: Blob;
@@ -10,6 +10,7 @@ export class FileDownloader {
     this.fileContent = fileContent;
   }
 
+  // Initiates the download of the file
   public download(): void {
     saveAs(this.fileContent, this.fileName);
   }
