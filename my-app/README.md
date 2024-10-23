@@ -64,4 +64,29 @@ Files that are too big will not be sent back by the api.
 ## Language and Dependencies
 Converto is a Next.js and React application written in Typescript and TSX with Tailwind CSS for styling.
 
-The code has dependencies towards Axios for api call to Easyffmpeg. File-saver and formdata for file handling. DaisyUi for design components.
+The code has dependencies towards Axios for api call to EasyFFM. File-saver and formdata for file handling. DaisyUi for design components.
+
+## Version
+The current version of Converto is '1.0.0'
+
+The project follows the Semantic Version System (Major,Minor,Patch)
+
+## Contributions
+Please contact author for contributions.
+
+## Licence
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Writers Note
+developed for the course "Introduction to software quality" at Linnéus University. The assignment implied that the student should create a web-application that builds upon the already created API/LIB from earlier in the course. The projects goal was to make it easier for users to manipulate video and sound files when handeling and changing these types of files from their browser.
+
+
+
+
+
+# To-do 
+Lägg in kravspecen i projektet och omvandla denna till md. /vision och krav/
+
+kapitel 2-11 Skriv en kort (4-6 meningar) reflektion för varje kapitel om hur just det kapitlet har påverkat eller inte påverkat din kod. Använd bokens termer. Ge exempel med läsbara screenshots från er kod till varje reflektion. Dokumentera detta till mig i ett separat dokument reflection.md där jag är mottagaren. 
+
+Driftsätt applikationen
