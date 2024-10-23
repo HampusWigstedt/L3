@@ -3,46 +3,23 @@ import FormData from 'form-data';
 import FileDownloader from '../Model/FileDownloader';
 
 class Client {
+    private static readonly DEFAULT_SERVER_HOST = 'localhost';
+    private static readonly DEFAULT_SERVER_PORT = 3000;
+    private static readonly ApiBaseUrl = 'https://cscloud6-195.lnu.se/hmus';
+
     private serverHost: string;
     private serverPort: number;
 
-    constructor(serverHost: string = 'localhost', serverPort: number = 3000) {
+    constructor(serverHost: string = Client.DEFAULT_SERVER_HOST, serverPort: number = Client.DEFAULT_SERVER_PORT) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
     }
-    
 
     // Creates FormData object from a file
     private async createFormData(file: File): Promise<FormData> {
         const form = new FormData();
         form.append('file', file);
         return form;
-    }
-
-    // Saves a data stream to a file (server-side only)
-    private async saveStreamToFile(dataStream: NodeJS.ReadableStream, outputFilePath: string): Promise<void> {
-        if (typeof window === 'undefined') {
-            const fs = await import('fs');
-            const writer = fs.createWriteStream(outputFilePath);
-
-            dataStream.pipe(writer);
-
-            return new Promise((resolve, reject) => {
-                writer.on('finish', () => {
-                    console.log(`File successfully downloaded and saved as ${outputFilePath}`);
-                    resolve();
-                });
-
-                writer.on('error', (err: Error) => {
-                    console.error('Error writing file:', err);
-                    reject(err);
-                });
-            });
-        } else {
-            const errorMessage = "File operations can only be run on the server.";
-            console.error(errorMessage);
-            return Promise.reject(new Error(errorMessage));
-        }
     }
 
     // Converts a file to MP3 format
@@ -52,7 +29,7 @@ class Client {
         const form = await this.createFormData(file);
 
         try {
-            const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/convert`, form, {
+            const response = await axios.post<Blob>(`${Client.ApiBaseUrl}/convert`, form, {
                 responseType: 'blob'
             });
 
@@ -63,11 +40,11 @@ class Client {
     }
 
     // Retrieves metadata of a file
-    public async getMetadata(file: File): Promise<Array> {
+    public async getMetadata(file: File) {
         const form = await this.createFormData(file);
 
         try {
-            const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/metadata`, form);
+            const response = await axios.post(`${Client.ApiBaseUrl}/metadata`, form);
             console.log('Metadata:', response.data);
             return response.data;
         } catch (err) {
@@ -82,7 +59,7 @@ class Client {
         const form = await this.createFormData(file);
 
         try {
-            const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/StereoToSurround`, form, {
+            const response = await axios.post<Blob>(`${Client.ApiBaseUrl}/StereoToSurround`, form, {
                 responseType: 'blob'
             });
 
@@ -101,7 +78,7 @@ class Client {
         form.append('height', height.toString());
 
         try {
-            const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/resize`, form, {
+            const response = await axios.post<Blob>(`${Client.ApiBaseUrl}/resize`, form, {
                 responseType: 'blob'
             });
 
@@ -118,7 +95,7 @@ class Client {
         const form = await this.createFormData(file);
 
         try {
-            const response = await axios.post(`https://cscloud6-195.lnu.se/hmus/removeaudio`, form, {
+            const response = await axios.post<Blob>(`${Client.ApiBaseUrl}/removeaudio`, form, {
                 responseType: 'blob'
             });
 
@@ -136,7 +113,7 @@ class Client {
     }
 
     // Handles the API response and initiates file download
-    private handleResponse(response: any, mimeType: string, fileName: string): void {
+    private handleResponse(response: { data: Blob }, mimeType: string, fileName: string): void {
         if (!response.data) {
             throw new Error('No data received from the server.');
         }
