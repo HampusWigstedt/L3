@@ -3,8 +3,8 @@ import "./globals.css";
 import NavBar from "../app/NavBar/NavBar";
 
 export const metadata: Metadata = {
-  title: "Converter",
-  description: "Converter app",
+  title: "Converto",
+  description: "Powered by Easy-ffmpeg",
 };
 
 export default function RootLayout({
