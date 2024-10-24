@@ -13,10 +13,11 @@ class FileHandler {
     }
 
     // Validates the file type
-    public validateFile(file: File): void {
+    public validateFile(file: File): string | null {
         if (!file) {
-            throw new Error(this.errorMessage);
+            return this.errorMessage;
         }
+        return null;
     }
 
     // Fetches metadata using the provided controller
@@ -31,6 +32,7 @@ class FileHandler {
 // Page component for the Metadata page
 const Metadata = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [metadata, setMetadata] = useState<any>(null);
     const [error, setError] = useState<string | null>(null);
     const [showFullMetadata, setShowFullMetadata] = useState<boolean>(false);
@@ -41,14 +43,9 @@ const Metadata = () => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            try {
-                fileHandler.validateFile(file);
-                setError(null);
-                setSelectedFile(file);
-            } catch (error) {
-                setError((error as Error).message);
-                setSelectedFile(null);
-            }
+            const error = fileHandler.validateFile(file);
+            setError(error);
+            setSelectedFile(error ? null : file);
         }
     }
 
@@ -60,11 +57,9 @@ const Metadata = () => {
                 setMetadata(metadata);
             } catch (error) {
                 console.error('Error fetching metadata:', error);
-                setError('Error fetching metadata. Please try again.');
             }
         } else {
             console.error('Please select a file to get metadata');
-            setError('Please select a file to get metadata');
         }
     }
 
