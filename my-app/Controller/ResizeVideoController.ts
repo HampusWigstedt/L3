@@ -1,12 +1,12 @@
-import Client from '../Model/client';
+import MediaApiCaller from '../Model/MediaApiCaller';
 import FileValidator from '../Model/FileValidator';
 
 class ResizeVideoController {
-    private client: Client;
+    private MediaApiCaller: MediaApiCaller;
     private fileValidator: FileValidator;
 
     constructor(allowedFileType: string[] = ['video/mp4'], errorMessage: string = 'Please select an MP4 file.') {
-        this.client = new Client();
+        this.MediaApiCaller = new MediaApiCaller();
         this.fileValidator = new FileValidator(allowedFileType, errorMessage);
     }
 
@@ -19,8 +19,8 @@ class ResizeVideoController {
     public async resizeVideo(file: File, width: number, height: number): Promise<void> {
         try {
             this.validateFile(file);
-            console.log('ResizeVideoController: Calling client.resizeVideo');
-            await this.client.resizeVideo(file, width, height);
+            console.log('ResizeVideoController: Calling MediaApiCaller.resizeVideo');
+            await this.MediaApiCaller.resizeVideo(file, width, height);
         } catch (error) {
             console.error('Error resizing video:', error);
             throw new Error('Failed to resize video. Please try again.');

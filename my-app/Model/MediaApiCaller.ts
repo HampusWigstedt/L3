@@ -1,7 +1,6 @@
+import FileDownloader from './FileDownloader';
 
-import FileDownloader from '../Model/FileDownloader';
-
-class Client {
+class MediaApiCaller {
     private static readonly defaultServerHost = 'localhost';
     private static readonly defaultServerPort = 3000;
     private static readonly apiBaseUrl = 'https://cscloud6-195.lnu.se/hmus';
@@ -9,7 +8,7 @@ class Client {
     private serverHost: string;
     private serverPort: number;
 
-    constructor(serverHost: string = Client.defaultServerHost, serverPort: number = Client.defaultServerPort) {
+    constructor(serverHost: string = MediaApiCaller.defaultServerHost, serverPort: number = MediaApiCaller.defaultServerPort) {
         this.serverHost = serverHost;
         this.serverPort = serverPort;
     }
@@ -20,7 +19,6 @@ class Client {
         return form;
     }
 
-    // Converts a file to MP3 format
     public async convertFile(file: File): Promise<void> {
         try {
             this.validateFileType(file, ['video/mp4', 'audio/wav'], 'Only MP4 and WAV files are allowed.');
@@ -31,7 +29,6 @@ class Client {
         }
     }
 
-    // Retrieves metadata of a file
     public async getMetadata(file: File) {
         try {
             const form = await this.createFormData(file);
@@ -41,7 +38,6 @@ class Client {
         }
     }
 
-    // Converts stereo audio to surround sound
     public async stereoToSurround(file: File): Promise<void> {
         try {
             this.validateFileType(file, ['audio/mpeg', 'audio/wav'], 'Only MP3 or WAV files are allowed.');
@@ -52,7 +48,6 @@ class Client {
         }
     }
 
-    // Resizes a video file
     public async resizeVideo(file: File, width: number, height: number): Promise<void> {
         try {
             this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
@@ -65,7 +60,6 @@ class Client {
         }
     }
 
-    // Removes audio from a video file
     public async removeAudio(file: File): Promise<void> {
         try {
             this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
@@ -82,7 +76,6 @@ class Client {
         }
     }
 
-    // Handles the API response and initiates file download
     private async handleResponse(response: Response, mimeType: string, fileName: string): Promise<void> {
         if (!response.ok) {
             const errorText = await response.text();
@@ -101,7 +94,7 @@ class Client {
 
     private async postFile(form: FormData, endpoint: string, mimeType: string, fileName: string): Promise<void> {
         try {
-            const response = await fetch(`${Client.apiBaseUrl}/${endpoint}`, {
+            const response = await fetch(`${MediaApiCaller.apiBaseUrl}/${endpoint}`, {
                 method: 'POST',
                 body: form
             });
@@ -113,7 +106,7 @@ class Client {
 
     private async postMetadata(form: FormData) {
         try {
-            const response = await fetch(`${Client.apiBaseUrl}/metadata`, {
+            const response = await fetch(`${MediaApiCaller.apiBaseUrl}/metadata`, {
                 method: 'POST',
                 body: form
             });
@@ -130,4 +123,4 @@ class Client {
     }
 }
 
-export default Client;
+export default MediaApiCaller;

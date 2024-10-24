@@ -1,12 +1,12 @@
-import Client from '../Model/client';
+import MediaApiCaller from '../Model/MediaApiCaller';
 import FileValidator from '../Model/FileValidator';
 
 class GetMetadataController {
-    private client: Client;
+    private MediaApiCaller: MediaApiCaller;
     private fileValidator: FileValidator;
 
     constructor(allowedFileTypes: string[] = ['audio/mpeg', 'audio/wav', 'video/mp4'], errorMessage: string = 'Please select a valid file.') {
-        this.client = new Client();
+        this.MediaApiCaller = new MediaApiCaller();
         this.fileValidator = new FileValidator(allowedFileTypes, errorMessage);
     }
 
@@ -19,8 +19,8 @@ class GetMetadataController {
     public async fetchMetadata(file: File) {
         try {
             this.validateFile(file); 
-            console.log('GetMetadataController: Calling client.getMetadata');
-            const metadata = await this.client.getMetadata(file);
+            console.log('GetMetadataController: Calling MediaApiCaller.getMetadata');
+            const metadata = await this.MediaApiCaller.getMetadata(file);
             return metadata;
         } catch (error) {
             console.error('Error fetching metadata:', error);
