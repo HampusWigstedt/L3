@@ -1,4 +1,3 @@
-// RemoveAudioController.ts
 import Client from '../Model/client';
 import FileValidator from '../Model/FileValidator';
 
@@ -11,15 +10,15 @@ class RemoveAudioController {
         this.fileValidator = new FileValidator(allowedFileTypes, errorMessage);
     }
 
-    // Validates the file type
+
     public validateFile(file: File): void {
         this.fileValidator.validate(file);
     }
 
-    // Removes audio from the video using the provided client
+
     public async removeAudio(file: File): Promise<void> {
         try {
-            this.validateFile(file); // Validate the file type before removing audio
+            this.validateFile(file);
             console.log('RemoveAudioController: Calling client.removeAudio');
             await this.client.removeAudio(file);
         } catch (error) {

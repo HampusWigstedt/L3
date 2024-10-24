@@ -4,7 +4,6 @@ export class FileDownloader {
   private fileName: string;
   private fileContent: Blob;
   
-
   constructor(fileName: string, fileContent: Blob) {
     this.validateInputs(fileName, fileContent);
     this.fileName = fileName;

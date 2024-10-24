@@ -1,4 +1,3 @@
-// ConverterController.ts
 import Client from '../Model/client';
 import FileValidator from '../Model/FileValidator';
 
@@ -11,15 +10,15 @@ class ConverterController {
         this.fileValidator = new FileValidator(allowedFileTypes, errorMessage);
     }
 
-    // Validates the file type
+
     public validateFile(file: File): void {
         this.fileValidator.validate(file);
     }
 
-    // Converts the file using the provided client
+
     public async convertFile(file: File): Promise<void> {
         try {
-            this.validateFile(file); // Validate the file type before conversion
+            this.validateFile(file);
             console.log('ConverterController: Calling client.convertFile');
             await this.client.convertFile(file);
             console.log('File converted successfully');

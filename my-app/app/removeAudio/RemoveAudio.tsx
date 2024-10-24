@@ -5,13 +5,13 @@ import RemoveAudioController from '../../Controller/RemoveAudioController';
 const allowedFileTypes = ['video/mp4'];
 const errorMessage = 'Please select an MP4 file.';
 
-// Component for removing audio from video files
+
 const RemoveAudio = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
     const removeAudioController = new RemoveAudioController(allowedFileTypes, errorMessage);
 
-    // Handles file selection and validation
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -26,7 +26,7 @@ const RemoveAudio = () => {
         }
     }
 
-    // Initiates the audio removal process
+
     const handleRemoveAudio = async () => {
         if (selectedFile) {
             try {
@@ -41,6 +41,7 @@ const RemoveAudio = () => {
         }
     }
 
+    
     return (
         <div className="p-4 w-screen h-screen">
             <h1 className="text-center text-4xl font-bold underline">Remove Audio from Video</h1>

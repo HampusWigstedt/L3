@@ -7,6 +7,7 @@ class FileValidator {
         this.errorMessage = errorMessage;
     }
 
+
     public validate(file: File): void {
         if (!this.allowedFileTypes.includes(file.type)) {
             throw new Error(this.errorMessage);

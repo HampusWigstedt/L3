@@ -5,7 +5,6 @@ import ResizeVideoController from '../../Controller/ResizeVideoController';
 const allowedFileTypes = ['video/mp4'];
 const errorMessage = 'Please select an MP4 file.';
 
-// Component for resizing video files
 const ResizeVideo = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [width, setWidth] = useState<number | null>(null);
@@ -13,7 +12,7 @@ const ResizeVideo = () => {
     const [error, setError] = useState<string | null>(null);
     const resizeVideoController = new ResizeVideoController(allowedFileTypes, errorMessage);
 
-    // Handles file selection and validation
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -28,7 +27,7 @@ const ResizeVideo = () => {
         }
     }
 
-    // Initiates the video resizing process
+
     const handleResizeVideo = async () => {
         if (selectedFile && width && height) {
             try {
@@ -42,6 +41,7 @@ const ResizeVideo = () => {
             setError('Please select a file and enter width and height');
         }
     }
+
 
     return (
         <div className="p-4 w-screen h-screen">

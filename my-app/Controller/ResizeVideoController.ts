@@ -1,4 +1,3 @@
-// ResizeVideoController.ts
 import Client from '../Model/client';
 import FileValidator from '../Model/FileValidator';
 
@@ -11,15 +10,15 @@ class ResizeVideoController {
         this.fileValidator = new FileValidator(allowedFileType, errorMessage);
     }
 
-    // Validates the file type
+
     public validateFile(file: File): void {
         this.fileValidator.validate(file);
     }
 
-    // Resizes the video using the provided client
+
     public async resizeVideo(file: File, width: number, height: number): Promise<void> {
         try {
-            this.validateFile(file); // Validate the file type before resizing
+            this.validateFile(file);
             console.log('ResizeVideoController: Calling client.resizeVideo');
             await this.client.resizeVideo(file, width, height);
         } catch (error) {

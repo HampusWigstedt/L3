@@ -11,7 +11,7 @@ const ConvertFile = () => {
     const [error, setError] = useState<string | null>(null);
     const converterController = new ConverterController(allowedFileTypes, errorMessage);
 
-    // Handles file selection and validation
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -26,7 +26,7 @@ const ConvertFile = () => {
         }
     }
 
-    // Initiates the file conversion process
+
     const handleConvertFile = async () => {
         if (selectedFile) {
             try {
@@ -41,6 +41,7 @@ const ConvertFile = () => {
         }
     }
 
+    
     return (
         <div className="p-4 w-screen h-screen">
             <h1 className="text-center text-4xl font-bold underline">Convert Mp4 to Mp3</h1>

@@ -5,7 +5,7 @@ import GetMetadataController from '../../Controller/GetMetadataController';
 const allowedFileTypes = ['audio/mpeg', 'audio/wav', 'video/mp4'];
 const errorMessage = 'Please select a valid file.';
 
-// Component for reading metadata from files
+
 const Metadata = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [metadata, setMetadata] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -13,7 +13,7 @@ const Metadata = () => {
     const [showFullMetadata, setShowFullMetadata] = useState<boolean>(false);
     const getMetadataController = new GetMetadataController(allowedFileTypes, errorMessage);
 
-    // Handles file selection and validation
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
@@ -28,7 +28,7 @@ const Metadata = () => {
         }
     }
 
-    // Fetches metadata for the selected file
+
     const handleGetMetadata = async () => {
         if (selectedFile) {
             try {
@@ -70,6 +70,7 @@ const Metadata = () => {
         );
     }
 
+    
     return (
         <div className="p-4 w-screen h-screen">
             <h1 className="text-center text-4xl font-bold underline">Read Metadata</h1>

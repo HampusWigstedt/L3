@@ -5,47 +5,18 @@ import StereoToSurroundController from '../../Controller/StereoToSurroundControl
 const allowedFileTypes = ['audio/mpeg', 'audio/wav'];
 const errorMessage = 'Please select an MP3 or WAV file.';
 
-// Object to handle file validation and conversion
-class FileHandler {
-    private allowedFileTypes: string[];
-    private errorMessage: string;
 
-    constructor(allowedFileTypes: string[], errorMessage: string) {
-        this.allowedFileTypes = allowedFileTypes;
-        this.errorMessage = errorMessage;
-    }
-
-
-    // Validates the file type
-    public validateFileType(file: File): void {
-        if (!this.allowedFileTypes.includes(file.type)) {
-            throw new Error(this.errorMessage);
-        }
-    }
-
-
-    // Converts the file using the provided controller
-    public async convertFile(file: File, controller: StereoToSurroundController): Promise<void> {
-        console.log('Converting file to surround sound:', file);
-        await controller.convertToSurround(file);
-        console.log('File converted successfully');
-    }
-    
-}
-
-// Component for converting stereo audio to surround sound
 const StereoToSurround = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const stereoToSurroundController = new StereoToSurroundController();
-    const fileHandler = new FileHandler(allowedFileTypes, errorMessage);
+    const stereoToSurroundController = new StereoToSurroundController(allowedFileTypes, errorMessage);
 
-    // Handles file selection and validation
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             try {
-                fileHandler.validateFileType(file);
+                stereoToSurroundController.validateFile(file);
                 setError(null);
                 setSelectedFile(file);
             } catch (error) {
@@ -55,11 +26,11 @@ const StereoToSurround = () => {
         }
     }
 
-    // Initiates the file conversion process
+
     const handleConvertFile = async () => {
         if (selectedFile) {
             try {
-                await fileHandler.convertFile(selectedFile, stereoToSurroundController);
+                await stereoToSurroundController.convertToSurround(selectedFile);
             } catch (error) {
                 console.error('Error converting file:', error);
                 setError('Error converting file. Please try again.');
@@ -70,6 +41,7 @@ const StereoToSurround = () => {
         }
     }
 
+    
     return (
         <div className="p-4 w-screen h-screen">
             <h1 className="text-center text-4xl font-bold underline">Convert Stereo to Surround</h1>

@@ -1,4 +1,3 @@
-// GetMetadataController.ts
 import Client from '../Model/client';
 import FileValidator from '../Model/FileValidator';
 
@@ -11,18 +10,17 @@ class GetMetadataController {
         this.fileValidator = new FileValidator(allowedFileTypes, errorMessage);
     }
 
-    // Validates the file type
+
     public validateFile(file: File): void {
         this.fileValidator.validate(file);
     }
 
-    // Fetches metadata using the provided client
+
     public async fetchMetadata(file: File) {
         try {
-            this.validateFile(file); // Validate the file type before fetching metadata
+            this.validateFile(file); 
             console.log('GetMetadataController: Calling client.getMetadata');
             const metadata = await this.client.getMetadata(file);
-            console.log('Metadata:', metadata); // Log the metadata to the console
             return metadata;
         } catch (error) {
             console.error('Error fetching metadata:', error);
