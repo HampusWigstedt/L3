@@ -5,44 +5,18 @@ import ConverterController from '../../Controller/ConverterController';
 const allowedFileTypes = ['video/mp4'];
 const errorMessage = 'Please select an MP4 file.';
 
-// Object to handle file validation and conversion
-class FileHandler {
-    private allowedFileTypes: string[];
-    private errorMessage: string;
-
-    constructor(allowedFileTypes: string[], errorMessage: string) {
-        this.allowedFileTypes = allowedFileTypes;
-        this.errorMessage = errorMessage;
-    }
-
-    // Validates the file type
-    public validateFileType(file: File): void {
-        if (!this.allowedFileTypes.includes(file.type)) {
-            throw new Error(this.errorMessage);
-        }
-    }
-
-    // Converts the file using the provided controller
-    public async convertFile(file: File, controller: ConverterController): Promise<void> {
-        console.log('Converting file:', file);
-        await controller.convertFile(file);
-        console.log('File converted successfully');
-    }
-}
-
 // Component for converting files from MP4 to MP3
 const ConvertFile = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const converterController = new ConverterController();
-    const fileHandler = new FileHandler(allowedFileTypes, errorMessage);
+    const converterController = new ConverterController(allowedFileTypes, errorMessage);
 
     // Handles file selection and validation
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             try {
-                fileHandler.validateFileType(file);
+                converterController.validateFile(file);
                 setError(null);
                 setSelectedFile(file);
             } catch (error) {
@@ -56,7 +30,7 @@ const ConvertFile = () => {
     const handleConvertFile = async () => {
         if (selectedFile) {
             try {
-                await fileHandler.convertFile(selectedFile, converterController);
+                await converterController.convertFile(selectedFile);
             } catch (error) {
                 console.error('Error converting file:', error);
                 setError('Error converting file. Please try again.');

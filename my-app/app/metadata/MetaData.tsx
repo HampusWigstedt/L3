@@ -2,50 +2,29 @@
 import React, { useState } from 'react';
 import GetMetadataController from '../../Controller/GetMetadataController';
 
+const allowedFileTypes = ['audio/mpeg', 'audio/wav', 'video/mp4'];
 const errorMessage = 'Please select a valid file.';
 
-// Object to handle file validation and metadata fetching
-class FileHandler {
-    private errorMessage: string;
-
-    constructor(errorMessage: string) {
-        this.errorMessage = errorMessage;
-    }
-
-    // Validates the file type
-    public validateFile(file: File): string | null {
-        if (!file) {
-            return this.errorMessage;
-        }
-        return null;
-    }
-
-    // Fetches metadata using the provided controller
-    public async fetchMetadata(file: File, controller: GetMetadataController) {
-        console.log('Fetching metadata for file:', file);
-        const metadata = await controller.getMetadata(file);
-        console.log('Metadata:', metadata); // Log the metadata to the console
-        return metadata;
-    }
-}
-
-// Page component for the Metadata page
+// Component for reading metadata from files
 const Metadata = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [metadata, setMetadata] = useState<any>(null);
+    const [metadata, setMetadata] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const [error, setError] = useState<string | null>(null);
     const [showFullMetadata, setShowFullMetadata] = useState<boolean>(false);
-    const getMetadataController = new GetMetadataController();
-    const fileHandler = new FileHandler(errorMessage);
+    const getMetadataController = new GetMetadataController(allowedFileTypes, errorMessage);
 
     // Handles file selection and validation
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            const error = fileHandler.validateFile(file);
-            setError(error);
-            setSelectedFile(error ? null : file);
+            try {
+                getMetadataController.validateFile(file);
+                setError(null);
+                setSelectedFile(file);
+            } catch (error) {
+                setError((error as Error).message);
+                setSelectedFile(null);
+            }
         }
     }
 
@@ -53,7 +32,7 @@ const Metadata = () => {
     const handleGetMetadata = async () => {
         if (selectedFile) {
             try {
-                const metadata = await fileHandler.fetchMetadata(selectedFile, getMetadataController);
+                const metadata = await getMetadataController.fetchMetadata(selectedFile);
                 setMetadata(metadata);
             } catch (error) {
                 console.error('Error fetching metadata:', error);

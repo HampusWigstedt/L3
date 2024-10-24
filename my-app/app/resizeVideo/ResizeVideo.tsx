@@ -2,33 +2,8 @@
 import React, { useState } from 'react';
 import ResizeVideoController from '../../Controller/ResizeVideoController';
 
-const allowedFileType = 'video/mp4';
+const allowedFileTypes = ['video/mp4'];
 const errorMessage = 'Please select an MP4 file.';
-
-// Object to handle file validation and resizing
-class FileHandler {
-    private allowedFileType: string;
-    private errorMessage: string;
-
-    constructor(allowedFileType: string, errorMessage: string) {
-        this.allowedFileType = allowedFileType;
-        this.errorMessage = errorMessage;
-    }
-
-    // Validates the file type
-    public validateFileType(file: File): void {
-        if (file.type !== this.allowedFileType) {
-            throw new Error(this.errorMessage);
-        }
-    }
-
-    // Resizes the video using the provided controller
-    public async resizeVideo(file: File, width: number, height: number, controller: ResizeVideoController): Promise<void> {
-        console.log('Resizing video:', file);
-        await controller.resizeVideo(file, width, height);
-        console.log('Video resized successfully');
-    }
-}
 
 // Component for resizing video files
 const ResizeVideo = () => {
@@ -36,15 +11,14 @@ const ResizeVideo = () => {
     const [width, setWidth] = useState<number | null>(null);
     const [height, setHeight] = useState<number | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const resizeVideoController = new ResizeVideoController();
-    const fileHandler = new FileHandler(allowedFileType, errorMessage);
+    const resizeVideoController = new ResizeVideoController(allowedFileTypes, errorMessage);
 
     // Handles file selection and validation
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
             try {
-                fileHandler.validateFileType(file);
+                resizeVideoController.validateFile(file);
                 setError(null);
                 setSelectedFile(file);
             } catch (error) {
@@ -58,7 +32,7 @@ const ResizeVideo = () => {
     const handleResizeVideo = async () => {
         if (selectedFile && width && height) {
             try {
-                await fileHandler.resizeVideo(selectedFile, width, height, resizeVideoController);
+                await resizeVideoController.resizeVideo(selectedFile, width, height);
             } catch (error) {
                 console.error('Error resizing video:', error);
                 setError('Error resizing video. Please try again.');

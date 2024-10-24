@@ -115,7 +115,7 @@ Example from Client code where validateFileType dont need comment as this is a s
     }
 ```
 ### Chapter 5
-I think formatting has never really been a issue for me personaly. I use the format document setting in VSC and for me that is enough. I also add some spacing to parts of the code that may need it for readability. Using spacing is in my opinion most necessery when we can divide different parts of a method into different parts. We have one block of variable declarations and then a spacing and then we have an if statement for example. This improves readability by a mile even if it could look like a very small fix.
+I think formatting has never really been a issue for me personaly. For the most part i use the format document setting in VSC and for me that is enough. In this project i took the approach of adding 2 spaces between every method and i think that was a nice touch to increase the readability of the code.
 ### Chapter 6
 +?
 ### Chapter 7
