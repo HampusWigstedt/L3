@@ -6,8 +6,8 @@ class GetMetadataController {
     constructor() {
         this.client = new Client();
     }
+    
 
-    // Retrieves metadata for the provided file
     public async getMetadata(file: File) {
         try {
             return await this.client.getMetadata(file);

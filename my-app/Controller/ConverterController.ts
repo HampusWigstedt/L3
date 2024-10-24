@@ -10,7 +10,7 @@ class ConverterController {
         this.client = new Client();
     }
 
-    // Converts the provided file if it is of an allowed type
+
     public async convertFile(file: File): Promise<void> {
         try {
             this.validateFileType(file);
@@ -22,7 +22,7 @@ class ConverterController {
         }
     }
 
-    // Validates the file type
+    
     private validateFileType(file: File): void {
         if (!ConverterController.allowedFileTypes.includes(file.type)) {
             throw new Error(ConverterController.errorMessage);

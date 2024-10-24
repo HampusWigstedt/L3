@@ -1,4 +1,3 @@
-// Home component for the main page
 export default function Home() {
   return (
     <main>

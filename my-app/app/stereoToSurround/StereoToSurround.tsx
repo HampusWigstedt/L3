@@ -15,6 +15,7 @@ class FileHandler {
         this.errorMessage = errorMessage;
     }
 
+
     // Validates the file type
     public validateFileType(file: File): void {
         if (!this.allowedFileTypes.includes(file.type)) {
@@ -22,12 +23,14 @@ class FileHandler {
         }
     }
 
+
     // Converts the file using the provided controller
     public async convertFile(file: File, controller: StereoToSurroundController): Promise<void> {
         console.log('Converting file to surround sound:', file);
         await controller.convertToSurround(file);
         console.log('File converted successfully');
     }
+    
 }
 
 // Component for converting stereo audio to surround sound

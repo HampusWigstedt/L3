@@ -1,6 +1,5 @@
 import FileDownloader from '../Model/FileDownloader';
 
-// Controller class to handle file download operations
 class FileDownloadController {
   private fileDownloader: FileDownloader;
 
@@ -11,7 +10,7 @@ class FileDownloadController {
     this.fileDownloader = new FileDownloader(fileName, fileContent);
   }
 
-  // Initiates the file download process
+
   public initiateDownload(): void {
     try {
       this.fileDownloader.download();
