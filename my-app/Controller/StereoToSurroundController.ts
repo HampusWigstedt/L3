@@ -12,9 +12,14 @@ class StereoToSurroundController {
 
     // Converts a stereo audio file to surround sound
     public async convertToSurround(file: File): Promise<void> {
-        this.validateFileType(file);
-        console.log('StereoToSurroundController: Calling client.stereoToSurround');
-        return this.client.stereoToSurround(file);
+        try {
+            this.validateFileType(file);
+            console.log('StereoToSurroundController: Calling client.stereoToSurround');
+            await this.client.stereoToSurround(file);
+        } catch (error) {
+            console.error('Error converting file to surround sound:', error);
+            throw new Error('Failed to convert file to surround sound. Please try again.');
+        }
     }
 
     // Validates the file type

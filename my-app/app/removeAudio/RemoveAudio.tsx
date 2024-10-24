@@ -16,11 +16,10 @@ class FileHandler {
     }
 
     // Validates the file type
-    public validateFileType(file: File): string | null {
+    public validateFileType(file: File): void {
         if (file.type !== this.allowedFileType) {
-            return this.errorMessage;
+            throw new Error(this.errorMessage);
         }
-        return null;
     }
 
     // Removes audio from the video using the provided controller
@@ -42,9 +41,14 @@ const RemoveAudio = () => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            const error = fileHandler.validateFileType(file);
-            setError(error);
-            setSelectedFile(error ? null : file);
+            try {
+                fileHandler.validateFileType(file);
+                setError(null);
+                setSelectedFile(file);
+            } catch (error) {
+                setError((error as Error).message);
+                setSelectedFile(null);
+            }
         }
     }
 
@@ -55,9 +59,11 @@ const RemoveAudio = () => {
                 await fileHandler.removeAudio(selectedFile, removeAudioController);
             } catch (error) {
                 console.error('Error removing audio:', error);
+                setError('Error removing audio. Please try again.');
             }
         } else {
             console.error('Please select a file to remove audio');
+            setError('Please select a file to remove audio');
         }
     }
 

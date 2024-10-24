@@ -24,38 +24,58 @@ class Client {
 
     // Converts a file to MP3 format
     public async convertFile(file: File): Promise<void> {
-        this.validateFileType(file, ['video/mp4', 'audio/wav'], 'Only MP4 and WAV files are allowed.');
-        const form = await this.createFormData(file);
-        await this.postFile(form, 'convert', 'audio/mpeg', 'output.mp3');
+        try {
+            this.validateFileType(file, ['video/mp4', 'audio/wav'], 'Only MP4 and WAV files are allowed.');
+            const form = await this.createFormData(file);
+            await this.postFile(form, 'convert', 'audio/mpeg', 'output.mp3');
+        } catch (error) {
+            this.handleError('Failed to convert file to MP3:', error);
+        }
     }
 
     // Retrieves metadata of a file
     public async getMetadata(file: File) {
-        const form = await this.createFormData(file);
-        return await this.postMetadata(form);
+        try {
+            const form = await this.createFormData(file);
+            return await this.postMetadata(form);
+        } catch (error) {
+            this.handleError('Failed to retrieve metadata:', error);
+        }
     }
 
     // Converts stereo audio to surround sound
     public async stereoToSurround(file: File): Promise<void> {
-        this.validateFileType(file, ['audio/mpeg', 'audio/wav'], 'Only MP3 or WAV files are allowed.');
-        const form = await this.createFormData(file);
-        await this.postFile(form, 'StereoToSurround', 'audio/mpeg', 'output_surround.mp3');
+        try {
+            this.validateFileType(file, ['audio/mpeg', 'audio/wav'], 'Only MP3 or WAV files are allowed.');
+            const form = await this.createFormData(file);
+            await this.postFile(form, 'StereoToSurround', 'audio/mpeg', 'output_surround.mp3');
+        } catch (error) {
+            this.handleError('Failed to convert stereo to surround sound:', error);
+        }
     }
 
     // Resizes a video file
     public async resizeVideo(file: File, width: number, height: number): Promise<void> {
-        this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
-        const form = await this.createFormData(file);
-        form.append('width', width.toString());
-        form.append('height', height.toString());
-        await this.postFile(form, 'resize', 'video/mp4', `resized_${file.name}`);
+        try {
+            this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
+            const form = await this.createFormData(file);
+            form.append('width', width.toString());
+            form.append('height', height.toString());
+            await this.postFile(form, 'resize', 'video/mp4', `resized_${file.name}`);
+        } catch (error) {
+            this.handleError('Failed to resize video:', error);
+        }
     }
 
     // Removes audio from a video file
     public async removeAudio(file: File): Promise<void> {
-        this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
-        const form = await this.createFormData(file);
-        await this.postFile(form, 'removeaudio', 'video/mp4', `no_audio_${file.name}`);
+        try {
+            this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
+            const form = await this.createFormData(file);
+            await this.postFile(form, 'removeaudio', 'video/mp4', `no_audio_${file.name}`);
+        } catch (error) {
+            this.handleError('Failed to remove audio from video:', error);
+        }
     }
 
     // Validates the file type
@@ -79,7 +99,7 @@ class Client {
     // Handles errors consistently
     private handleError(message: string, err: Error | string | unknown): void {
         console.error(message, err);
-        throw err;
+        throw new Error(`${message} ${err instanceof Error ? err.message : err}`);
     }
 
     // Posts file to the specified endpoint and handles the response

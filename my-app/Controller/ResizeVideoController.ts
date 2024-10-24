@@ -9,8 +9,13 @@ class ResizeVideoController {
 
     // Resizes a video file to the specified width and height
     public async resizeVideo(file: File, width: number, height: number): Promise<void> {
-        console.log('ResizeVideoController: Calling client.resizeVideo');
-        return this.client.resizeVideo(file, width, height);
+        try {
+            console.log('ResizeVideoController: Calling client.resizeVideo');
+            await this.client.resizeVideo(file, width, height);
+        } catch (error) {
+            console.error('Error resizing video:', error);
+            throw new Error('Failed to resize video. Please try again.');
+        }
     }
 }
 

@@ -9,8 +9,13 @@ class RemoveAudioController {
 
     // Removes audio from the provided video file
     public async removeAudio(file: File): Promise<void> {
-        console.log('RemoveAudioController: Calling client.removeAudio');
-        return this.client.removeAudio(file);
+        try {
+            console.log('RemoveAudioController: Calling client.removeAudio');
+            await this.client.removeAudio(file);
+        } catch (error) {
+            console.error('Error removing audio from video:', error);
+            throw new Error('Failed to remove audio from video. Please try again.');
+        }
     }
 }
 

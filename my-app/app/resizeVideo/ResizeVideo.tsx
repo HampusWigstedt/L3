@@ -16,11 +16,10 @@ class FileHandler {
     }
 
     // Validates the file type
-    public validateFileType(file: File): string | null {
+    public validateFileType(file: File): void {
         if (file.type !== this.allowedFileType) {
-            return this.errorMessage;
+            throw new Error(this.errorMessage);
         }
-        return null;
     }
 
     // Resizes the video using the provided controller
@@ -44,9 +43,14 @@ const ResizeVideo = () => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            const error = fileHandler.validateFileType(file);
-            setError(error);
-            setSelectedFile(error ? null : file);
+            try {
+                fileHandler.validateFileType(file);
+                setError(null);
+                setSelectedFile(file);
+            } catch (error) {
+                setError((error as Error).message);
+                setSelectedFile(null);
+            }
         }
     }
 
@@ -57,9 +61,11 @@ const ResizeVideo = () => {
                 await fileHandler.resizeVideo(selectedFile, width, height, resizeVideoController);
             } catch (error) {
                 console.error('Error resizing video:', error);
+                setError('Error resizing video. Please try again.');
             }
         } else {
             console.error('Please select a file and enter width and height');
+            setError('Please select a file and enter width and height');
         }
     }
 

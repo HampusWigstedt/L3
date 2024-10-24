@@ -13,11 +13,10 @@ class FileHandler {
     }
 
     // Validates the file type
-    public validateFile(file: File): string | null {
+    public validateFile(file: File): void {
         if (!file) {
-            return this.errorMessage;
+            throw new Error(this.errorMessage);
         }
-        return null;
     }
 
     // Fetches metadata using the provided controller
@@ -42,9 +41,14 @@ const Metadata = () => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            const error = fileHandler.validateFile(file);
-            setError(error);
-            setSelectedFile(error ? null : file);
+            try {
+                fileHandler.validateFile(file);
+                setError(null);
+                setSelectedFile(file);
+            } catch (error) {
+                setError((error as Error).message);
+                setSelectedFile(null);
+            }
         }
     }
 
@@ -56,9 +60,11 @@ const Metadata = () => {
                 setMetadata(metadata);
             } catch (error) {
                 console.error('Error fetching metadata:', error);
+                setError('Error fetching metadata. Please try again.');
             }
         } else {
             console.error('Please select a file to get metadata');
+            setError('Please select a file to get metadata');
         }
     }
 

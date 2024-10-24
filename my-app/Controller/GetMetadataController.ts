@@ -9,7 +9,12 @@ class GetMetadataController {
 
     // Retrieves metadata for the provided file
     public async getMetadata(file: File) {
-        return this.client.getMetadata(file);
+        try {
+            return await this.client.getMetadata(file);
+        } catch (error) {
+            console.error('Error retrieving metadata:', error);
+            throw new Error('Failed to retrieve metadata. Please try again.');
+        }
     }
 }
 

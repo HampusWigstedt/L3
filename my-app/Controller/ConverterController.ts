@@ -12,9 +12,14 @@ class ConverterController {
 
     // Converts the provided file if it is of an allowed type
     public async convertFile(file: File): Promise<void> {
-        this.validateFileType(file);
-        console.log('ConverterController: Calling client.convertFile');
-        return await this.client.convertFile(file);
+        try {
+            this.validateFileType(file);
+            console.log('ConverterController: Calling client.convertFile');
+            await this.client.convertFile(file);
+        } catch (error) {
+            console.error('Error converting file:', error);
+            throw new Error('Failed to convert file. Please try again.');
+        }
     }
 
     // Validates the file type

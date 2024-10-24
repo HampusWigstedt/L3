@@ -16,11 +16,10 @@ class FileHandler {
     }
 
     // Validates the file type
-    public validateFileType(file: File): string | null {
+    public validateFileType(file: File): void {
         if (!this.allowedFileTypes.includes(file.type)) {
-            return this.errorMessage;
+            throw new Error(this.errorMessage);
         }
-        return null;
     }
 
     // Converts the file using the provided controller
@@ -42,9 +41,14 @@ const StereoToSurround = () => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files[0]) {
             const file = event.target.files[0];
-            const error = fileHandler.validateFileType(file);
-            setError(error);
-            setSelectedFile(error ? null : file);
+            try {
+                fileHandler.validateFileType(file);
+                setError(null);
+                setSelectedFile(file);
+            } catch (error) {
+                setError((error as Error).message);
+                setSelectedFile(null);
+            }
         }
     }
 
@@ -55,9 +59,11 @@ const StereoToSurround = () => {
                 await fileHandler.convertFile(selectedFile, stereoToSurroundController);
             } catch (error) {
                 console.error('Error converting file:', error);
+                setError('Error converting file. Please try again.');
             }
         } else {
             console.error('Please select a file to convert');
+            setError('Please select a file to convert');
         }
     }
 
