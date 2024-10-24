@@ -119,15 +119,30 @@ I think formatting has never really been a issue for me personaly. For the most 
 ### Chapter 6
 +?
 ### Chapter 7
-+
+Error handling has been changed by quite a bit to match clean code rules. I implemented the handleError method that logs the errors and throws a descriptive message which both Ensures Proper Cleanup and Recovery and Writes descriptive error messages. To further add onto that i used exceptions instead of return codes to handle the errors. I feel like this has made the code more clean and adresses "do one thing" while still making it possible for differnet classes to have different exceptions.
+
+Example from Client class 
+```Javascript
+    private handleError(message: string, err: Error | string | unknown): void {
+        console.error(message, err);
+        throw new Error(`${message} ${err instanceof Error ? err.message : err}`);
+
+        // In every method we have somthing like the example below.
+         this.handleError('Failed to remove audio from video:', error);
+    }
+```
 ### Chapter 8
-?
+Chapter 8 states rules for how we should use extrenal libraries. In the first iteration of the client code i used axios and some other packages to support this. This is the way i usualy do my api request and feel most comfortable with. To follow the clean code rules i needed to put these libraries in wrappers or interfaces so that they could be updated or replaced easier. I took a different approach and stepped out of my comfort-zone and rewrote all axios call into two fetch call method. One for postFile and one for metadata. This is the easies approach as we, most of the time don't need external libraries at all. You could say that i "explored and learned" as the stated example in the book.
 ### Chapter 9
-+
+This chapter was interesting but i can't figure out how to implement the rules in my code. I could have made a automated test with 2-3 files that test all the public methods in the project and test which ones go through without errors and if we get the correct conversions back. I chose to do semi-automated and manual test instead as this is a smaller project. I think the 3 rules of TDD are a interesting and very smart approach and i think i follow these rules even without automated tests. My thought is that if you have a vison, you are testing somthing. I think this is a interesting thought and i would love to build on it even if it isn't theoreticaly true. The optimal way would have been to do automated tests for almost everything but i think manual tests are more suted for client code in general and especially in this project. 
 ### Chapter 10
 
 ### Chapter 11
+I chose to follow the MVC structure in this project to follow "separation of concerns" and keep testability as high as possible. The model handles the data, the view manages the presentation and the controller processes user inputs. I thought this would be the best way to approach this project as the code needed to be object oriented and react isn't very good at being object oriented. I think i did a decent job of breaking down the system down into smaller and more independent modules. This helps alot with reuseability and will help if i choose to add automated tests in future development of the project. React/next route system also helps with the structure as seen in the example below.
 
+Example Showing the structure.
+
+![Example Image](/public/stucture.png)
 # Reflection
 
 + klar

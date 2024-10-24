@@ -1,5 +1,4 @@
-import axios from 'axios';
-import FormData from 'form-data';
+
 import FileDownloader from '../Model/FileDownloader';
 
 class Client {
@@ -15,13 +14,11 @@ class Client {
         this.serverPort = serverPort;
     }
 
-
     private async createFormData(file: File): Promise<FormData> {
         const form = new FormData();
         form.append('file', file);
         return form;
     }
-
 
     // Converts a file to MP3 format
     public async convertFile(file: File): Promise<void> {
@@ -34,7 +31,7 @@ class Client {
         }
     }
 
-
+    // Retrieves metadata of a file
     public async getMetadata(file: File) {
         try {
             const form = await this.createFormData(file);
@@ -44,7 +41,7 @@ class Client {
         }
     }
 
-
+    // Converts stereo audio to surround sound
     public async stereoToSurround(file: File): Promise<void> {
         try {
             this.validateFileType(file, ['audio/mpeg', 'audio/wav'], 'Only MP3 or WAV files are allowed.');
@@ -55,7 +52,7 @@ class Client {
         }
     }
 
-
+    // Resizes a video file
     public async resizeVideo(file: File, width: number, height: number): Promise<void> {
         try {
             this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
@@ -68,7 +65,7 @@ class Client {
         }
     }
 
-
+    // Removes audio from a video file
     public async removeAudio(file: File): Promise<void> {
         try {
             this.validateFileType(file, ['video/mp4'], 'Only MP4 files are allowed.');
@@ -79,49 +76,54 @@ class Client {
         }
     }
 
-
     private validateFileType(file: File, allowedTypes: string[], errorMessage: string): void {
         if (!allowedTypes.includes(file.type)) {
             throw new Error(errorMessage);
         }
     }
 
-
     // Handles the API response and initiates file download
-    private handleResponse(response: { data: Blob }, mimeType: string, fileName: string): void {
-        if (!response.data) {
-            throw new Error('No data received from the server.');
+    private async handleResponse(response: Response, mimeType: string, fileName: string): Promise<void> {
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Server responded with status ${response.status}: ${errorText}`);
         }
 
-        const blob = new Blob([response.data], { type: mimeType });
+        const blob = await response.blob();
         const fileDownloader = new FileDownloader(fileName, blob);
         fileDownloader.download();
     }
-
 
     private handleError(message: string, err: Error | string | unknown): void {
         console.error(message, err);
         throw new Error(`${message} ${err instanceof Error ? err.message : err}`);
     }
 
-
     private async postFile(form: FormData, endpoint: string, mimeType: string, fileName: string): Promise<void> {
         try {
-            const response = await axios.post<Blob>(`${Client.apiBaseUrl}/${endpoint}`, form, {
-                responseType: 'blob'
+            const response = await fetch(`${Client.apiBaseUrl}/${endpoint}`, {
+                method: 'POST',
+                body: form
             });
-            this.handleResponse(response, mimeType, fileName);
+            await this.handleResponse(response, mimeType, fileName);
         } catch (err) {
             this.handleError(`Error making API request to ${endpoint}:`, err);
         }
     }
 
-    
     private async postMetadata(form: FormData) {
         try {
-            const response = await axios.post(`${Client.apiBaseUrl}/metadata`, form);
-            console.log('Metadata:', response.data);
-            return response.data;
+            const response = await fetch(`${Client.apiBaseUrl}/metadata`, {
+                method: 'POST',
+                body: form
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to retrieve metadata: ${errorText}`);
+            }
+            const data = await response.json();
+            console.log('Metadata:', data);
+            return data;
         } catch (err) {
             this.handleError('Error retrieving metadata:', err);
         }
