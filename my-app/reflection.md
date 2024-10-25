@@ -150,7 +150,22 @@ class StereoToSurroundController {
 export default StereoToSurroundController;
 ```
 ### Chapter 6
-+?
+In the MediaApiCaller class, I focused on encapsulating behavior to align with Clean Code principles. Methods like convertFile and resizeVideo simplify interactions by hiding internal details, following data/object anti-symmetry. I treat files as DTOs to keep data separate from logic, which supports encapsulation and reduces coupling. I also centralized HTTP interactions in postFile and postMetadata, which encapsulates what varies and makes future updates easier. By respecting the Law of Demeter, I ensure that methods don't expose unnecessary details. Overall, this design keeps the code clean and extendable while maintaining clarity.
+
+Example convertFile method hides internal logic and details, following data/object anti-symmetry.
+
+```Javascript
+    public async convertFile(file: File): Promise<void> {
+        try {
+            this.validateFileType(file, ['video/mp4', 'audio/wav'], 'Only MP4 and WAV files are allowed.');
+            const form = await this.createFormData(file);
+            await this.postFile(form, 'convert', 'audio/mpeg', 'output.mp3');
+        } catch (error) {
+            this.handleError('Failed to convert file to MP3:', error);
+        }
+    }
+```
+
 ### Chapter 7
 Error handling has been changed by quite a bit to match clean code rules. I implemented the handleError method that logs the errors and throws a descriptive message which both Ensures Proper Cleanup and Recovery and Writes descriptive error messages. To further add onto that i used exceptions instead of return codes to handle the errors. I feel like this has made the code more clean and adresses "do one thing" while still making it possible for differnet classes to have different exceptions.
 
@@ -196,7 +211,7 @@ After
 
 ```
 ### Chapter 9
-This chapter was interesting but i can't figure out how to truly implement the rules in my code. I could have made a automated test with 2-3 files that test all the public methods in the project and test which ones go through without errors and if we get the correct conversions back. I chose to do semi-automated and manual test instead as this is a smaller project. I think the 3 rules of TDD are a interesting and very smart approach and i think i follow these rules even without automated tests. My thought is that if you have a vison, you are testing somthing. I think this is a interesting thought and i would love to build on it even if it isn't theoreticaly true. The optimal way would have been to do automated tests for almost everything but i think manual tests are more suted for Client code in general, and especially in this project. 
+This chapter was interesting but i can't figure out how to truly implement the rules in my code. I could have made a automated test with 2-3 files that test all the public methods in the project and test which ones go through without errors and if we get the correct conversions back. I chose to do manual test instead as this is a smaller project. I think the 3 rules of TDD are a interesting and very smart approach and i think i follow these rules even without automated tests. My thought is that if you have a vison, you are testing somthing. I think this is a interesting thought and i would love to build on it even if it isn't theoreticaly true. The optimal way would have been to do automated tests for almost everything but i think manual tests are more suted for Client code in general, and especially in this project. 
 
 Example of tests in the
 [Test Report](/TestRapport.md)
@@ -233,7 +248,3 @@ I chose to follow the MVC structure in this project to follow "separation of con
 Example Showing the structure.
 
 ![Example Image](/public/stucture.png)
-# Reflection
-
-+ klar
-? kolla igen
